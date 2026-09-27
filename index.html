@@ -356,6 +356,76 @@
 </head>
 
 <body>
+  <!-- ===== INICIO FORMULARIO DE ACCESO ===== -->
+<style>
+  body.bloqueado{overflow:hidden}
+  #acceso{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;
+    background:linear-gradient(160deg,var(--mist) 0%,var(--blush) 100%);transition:opacity .5s ease}
+  #acceso.oculto{opacity:0;pointer-events:none}
+  .acceso-card{width:100%;max-width:380px;background:var(--paper);border-radius:18px;padding:40px 30px;
+    box-shadow:0 24px 60px rgba(63,26,50,.18);text-align:center}
+  .acceso-marca{font-family:var(--font-display);font-weight:700;font-size:2.4rem;letter-spacing:-.04em;color:var(--plum);line-height:1}
+  .acceso-card p{margin:.6rem 0 1.8rem;color:var(--muted);font-family:var(--font-text);font-size:1.05rem}
+  .acceso-campo{position:relative}
+  .acceso-campo input{width:100%;padding:14px 48px 14px 18px;border:1.5px solid var(--line);border-radius:999px;
+    font-size:16px;font-family:var(--font-text);outline:none;background:#fff;color:var(--ink)}
+  .acceso-campo input:focus{border-color:var(--plum);box-shadow:0 0 0 3px rgba(91,39,72,.15)}
+  .acceso-ver{position:absolute;right:12px;top:50%;transform:translateY(-50%);border:0;background:none;font-size:18px;color:var(--muted)}
+  .acceso-error{color:#B3261E;font-size:.9rem;min-height:1.4em;margin:.5rem 0 .8rem;font-family:var(--font-text)}
+  .acceso-card .btn{width:100%}
+  .acceso-card.sacudir{animation:sacudir .4s}
+  @keyframes sacudir{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+</style>
+
+<div id="acceso">
+  <form class="acceso-card" id="accesoForm" autocomplete="off">
+    <div class="acceso-marca">Maré</div>
+    <p>Ingresa la contraseña para ver la tienda</p>
+    <div class="acceso-campo">
+      <input type="password" id="accesoClave" placeholder="Contraseña" required>
+      <button type="button" class="acceso-ver" id="accesoVer" aria-label="Mostrar contraseña">👁</button>
+    </div>
+    <div class="acceso-error" id="accesoError"></div>
+    <button type="submit" class="btn btn-primary">Ingresar</button>
+  </form>
+</div>
+
+<script>
+(function(){
+  var CLAVE = '12345'; // <-- aquí se cambia la contraseña
+  var panel = document.getElementById('acceso');
+  var ok = false;
+  try { ok = sessionStorage.getItem('accesoOK') === '1'; } catch(e){}
+  if (ok) { panel.remove(); return; }
+
+  document.body.classList.add('bloqueado');
+  var form  = document.getElementById('accesoForm');
+  var input = document.getElementById('accesoClave');
+  var error = document.getElementById('accesoError');
+  var ver   = document.getElementById('accesoVer');
+  input.focus();
+
+  ver.onclick = function(){
+    input.type = input.type === 'password' ? 'text' : 'password';
+    input.focus();
+  };
+
+  form.onsubmit = function(e){
+    e.preventDefault();
+    if (input.value === CLAVE) {
+      try { sessionStorage.setItem('accesoOK','1'); } catch(e){}
+      panel.classList.add('oculto');
+      document.body.classList.remove('bloqueado');
+      setTimeout(function(){ panel.remove(); }, 500);
+    } else {
+      error.textContent = 'Contraseña incorrecta. Intenta de nuevo.';
+      form.classList.remove('sacudir'); void form.offsetWidth; form.classList.add('sacudir');
+      input.value = ''; input.focus();
+    }
+  };
+})();
+</script>
+<!-- ===== FIN FORMULARIO DE ACCESO ===== -->
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
   <!-- ============================================================
